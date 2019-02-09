@@ -9,15 +9,19 @@
     "rules": {
         "indent": [
             "error",
-            "tab"
+            4
         ],
         "linebreak-style": [
             "error",
-            "windows"
+            "windows",
         ],
         "quotes": [
             "error",
-            "double"
+            "double",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
         ],
         "semi": [
             "error",
