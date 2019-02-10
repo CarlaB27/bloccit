@@ -9,13 +9,14 @@ describe("routes : static", () => {
                 expect(res.statusCode).toBe(200);
                 expect(body).toContain("Welcome to Bloccit");
                 done();
+                console.log("what is happening here")
             });
         });
     });
 
     describe("GET /marco", () => {
         it("should return 'polo'", (done) => {
-            request.get(base + 'marco', (err, res, body) => {
+            request.get(base + "marco", (err, res, body) => {
                 expect(res.statusCode).toBe(200);
                 expect(res.body).toBe("polo");
                 done();
