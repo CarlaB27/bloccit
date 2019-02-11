@@ -12,11 +12,11 @@ describe("routes : static", () => {
         });
     });
 
-    describe("GET /marco", () => {
-        it("should return 'polo'", (done) => {
-            request.get(base + "marco", (err, res, body) => {
+    describe("GET /about", () => {
+        it("should return status code 200 from /about and have 'About us' in the body of the response", (done) => {
+            request.get(base + "about", (err, res, body) => {
                 expect(res.statusCode).toBe(200);
-                expect(res.body).toBe("polo");
+                expect(res.body).toContain("About us");
                 done();
             });
         });
