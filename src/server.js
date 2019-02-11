@@ -13,7 +13,7 @@ function normalizePort(val) {
     if (isNaN(port)) {
         return val;
     }
-    ir(port >= 0){
+    if(port >= 0){
         return port;
     }
     return false;
