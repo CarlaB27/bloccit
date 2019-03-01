@@ -2,6 +2,7 @@ module.exports = {
     validatePosts(req, res, next) {
         if (req.method === "POST") {
             req.checkParams("topicId", "must be valid").notEmpty().isInt();
+            //this was from the checkpoint requirements
             req.checkBody("title", "must be at least 2 characters in length").isLength({ min: 2 });
             req.checkBody("body", "must be at least 10 characters in length").isLength({ min: 10 });
         }
@@ -15,6 +16,7 @@ module.exports = {
     },
     validateTopics(req, res, next) {
         if (req.method === "POST") {
+            //I believe this is correct
             req.checkBody("title", "must be at least 5 characters in length").isLength({ min: 5 });
             req.checkBody("description", "must be at least 10 characters in length").isLength({ min: 10 });
         }
