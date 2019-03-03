@@ -1,5 +1,6 @@
 const Topic = require("./models").Topic;
 const Post = require("./models").Post;
+const Authorizer = require("../policies/topic");
 
 module.exports = {
     getAllTopics(callback) {
@@ -11,6 +12,7 @@ module.exports = {
                 callback(err);
             })
     },
+
     addTopic(newTopic, callback) {
         return Topic.create({
             title: newTopic.title,
@@ -23,6 +25,7 @@ module.exports = {
                 callback(err);
             })
     },
+
     getTopic(id, callback) {
         return Topic.findById(id, {
             include: [{
@@ -37,32 +40,48 @@ module.exports = {
                 callback(err);
             })
     },
-    deleteTopic(id, callback) {
-        return Topic.destroy({
-            where: { id }
-        })
+
+    deleteTopic(req, callback) {
+        return Topic.findById(req.params.id)
             .then((topic) => {
-                callback(null, topic);
+                const authorized = new Authorizer(req.user, topic).destroy();
+                if (authorized) {
+                    topic.destroy()
+                        .then((res) => {
+                            callback(null, topic);
+                        });
+
+                } else {
+                    req.flash("notice", "You are not authorized to do that.")
+                    callback(401);
+                }
             })
             .catch((err) => {
                 callback(err);
-            })
+            });
     },
-    updateTopic(id, updatedTopic, callback) {
-        return Topic.findById(id)
+
+    updateTopic(req, updatedTopic, callback) {
+        return Topic.findById(req.params.id)
             .then((topic) => {
                 if (!topic) {
                     return callback("Topic not found");
                 }
-                topic.update(updatedTopic, {
-                    fields: Object.keys(updatedTopic)
-                })
-                    .then(() => {
-                        callback(null, topic);
+                const authorized = new Authorizer(req.user, topic).update();
+                if (authorized) {
+                    topic.update(updatedTopic, {
+                        fields: Object.keys(updatedTopic)
                     })
-                    .catch((err) => {
-                        callback(err);
-                    });
+                        .then(() => {
+                            callback(null, topic);
+                        })
+                        .catch((err) => {
+                            callback(err);
+                        });
+                } else {
+                    req.flash("notice", "You are not authorized to do that.");
+                    callback("Forbidden");
+                }
             });
     }
 
