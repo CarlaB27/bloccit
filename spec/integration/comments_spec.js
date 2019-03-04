@@ -11,8 +11,6 @@ const Comment = require("../../src/db/models").Comment;
 describe("routes : comments", () => {
 
     beforeEach((done) => {
-
-        // #2
         this.user;
         this.topic;
         this.post;
@@ -20,7 +18,6 @@ describe("routes : comments", () => {
 
         sequelize.sync({ force: true }).then((res) => {
 
-            // #3
             User.create({
                 email: "starman@tesla.com",
                 password: "Trekkie4lyfe"
@@ -68,7 +65,7 @@ describe("routes : comments", () => {
         });
     });
 
-    //test suites will go there
+    //GUEST
     describe("guest attempting to perform CRUD actions for Comment", () => {
 
         // #2
@@ -140,6 +137,7 @@ describe("routes : comments", () => {
     });
 
 
+    //SIGNED IN
     describe("signed in user performing CRUD actions for Comment", () => {
 
         beforeEach((done) => {    // before each suite in this context
@@ -156,9 +154,7 @@ describe("routes : comments", () => {
             );
         });
 
-        // #2
         describe("POST /topics/:topicId/posts/:postId/comments/create", () => {
-
             it("should create a new comment and redirect", (done) => {
                 const options = {
                     url: `${base}${this.topic.id}/posts/${this.post.id}/comments/create`,
@@ -186,7 +182,6 @@ describe("routes : comments", () => {
 
         // #3
         describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
-
             it("should delete the comment with the associated ID", (done) => {
                 Comment.all()
                     .then((comments) => {
@@ -204,14 +199,90 @@ describe("routes : comments", () => {
                                         expect(comments.length).toBe(commentCountBeforeDelete - 1);
                                         done();
                                     })
-
                             });
                     })
-
             });
-
         });
+        //Member user tries to delete another member user's comment = unsuccessful.
+        it("should not delete the comment with the associated ID", (done) => {
+            User.create({
+                email: "starman@tesla.com",
+                password: "Trekkie4lyfe"
+            })
+                .then((user) => {
+                    request.get({           // mock authentication
+                        url: "http://localhost:3000/auth/fake",
+                        form: {
+                            role: "member",     // mock authenticate as member user
+                            userId: user.id
+                        }
+                    },
+                        (err, res, body) => {
+                            Comment.all()
+                                .then((comments) => {
+                                    const commentCountBeforeDelete = comments.length;
 
+                                    expect(commentCountBeforeDelete).toBe(1);
+
+                                    request.post(
+                                        `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+                                        (err, res, body) => {
+                                            Comment.all()
+                                                .then((comments) => {
+                                                    expect(err).toBeNull();
+                                                    expect(comments.length).toBe(commentCountBeforeDelete);
+                                                    done();
+                                                })
+                                                .catch((err) => {
+                                                    console.log(err);
+                                                    done();
+                                                });
+                                        });
+                                });
+                        }
+                    );
+                });
+        });
     }); //end context for signed in user
 
+
+    //Admin user tries to delete member user's comment = successful
+    describe("signed in user performing CRUD actions for Comment", () => {
+        beforeEach((done) => {    // before each suite in this context
+            request.get({           // mock authentication
+                url: "http://localhost:3000/auth/fake",
+                form: {
+                    role: "admin",     // mock authenticate as admin user
+                    userId: this.user.id
+                }
+            },
+                (err, res, body) => {
+                    done();
+                }
+            );
+        });
+
+        describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
+            it("should delete the comment with the associated ID", (done) => {
+                Comment.all()
+                    .then((comments) => {
+                        const commentCountBeforeDelete = comments.length;
+                        expect(commentCountBeforeDelete).toBe(1);
+                        request.post(
+                            `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+                            (err, res, body) => {
+                                expect(res.statusCode).toBe(302);
+                                Comment.all()
+                                    .then((comments) => {
+                                        expect(err).toBeNull();
+                                        expect(comments.length).toBe(commentCountBeforeDelete - 1);
+                                        done();
+                                    })
+                            });
+                    })
+            });
+        });
+
+
+    });
 });
