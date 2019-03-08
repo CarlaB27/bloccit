@@ -9,7 +9,7 @@
     <% include ../static/partials/navbar.ejs %>
 
     <main class="container">
-
+        <% include ../static/partials/messages.ejs %>
         <h1>
             <%= topic.title %>
         </h1>
@@ -31,8 +31,8 @@
         <ul class="list-group">
             <% topic.posts.forEach((post) => { %>
             <li class="list-group-item">
-                <a href="/topics/<%= topic.id %>/posts/<%= post.id %>">
-                    <%= post.title %> </a>
+                <a href="/topics/<%= topic.id %>/posts/<%= post.id %">
+                    <%= post.title %>></a>
             </li>
             <% }) %>
         </ul>

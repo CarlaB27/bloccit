@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html>
+<!DOCTYPE html>
+<html>
 
 <head>
-    <% include ../static/partials/head.ejs %>
+    <%- include('../partials/head.ejs') -%>
 </head>
 
 <body>
-    <% include ../static/partials/navbar.ejs %>
+    <%- include('../partials/navbar.ejs') -%>
 
     <main class="container">
-
-        <% include ../static/partials/messages.ejs %>
+        <%- include('../partials/messages.ejs') -%>
 
         <div style="display: flex; align-items:center;">
-            <% if(currentUser) { %>
-            <% include ../votes/voting.ejs %>
-            <% } %>
             <h1>
                 <%= post.title %>
             </h1>
+            <% if(currentUser) { %>
+            <%- include('../votes/voting.ejs') -%>
+            <% } %>
         </div>
 
-        <% if(currentUser.isAdmin() || currentUser.isOwner()) { %>
-
+        <% if (currentUser) { %>
+        <% if (currentUser.id === post.userId || currentUser.isAdmin()) { %>
         <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
         <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
         <% } %>
+        <% } %>
         <p>
             <%= post.body %>
         </p>
         <section id="comment-form">
+
             <% if(currentUser) { %>
             <% include ../comments/new.ejs %>
             <% } %>
@@ -40,15 +43,14 @@
         <section id="comment-list">
             <% if(post.comments) { %>
             <% post.comments.forEach((comment) => { %>
+
             <%- include("../comments/show.ejs", {comment}) %>
             <% }) %>
             <% } %>
         </section>
-
-
     </main>
 
-    <% include ../static/partials/baseScripts.ejs %>
+    <%- include('../partials/baseScripts.ejs') -%>
 
 </body>
 
