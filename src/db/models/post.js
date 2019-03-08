@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
     return this.votes
       .map((v) => { return v.value })
       .reduce((prev, next) => { return prev + next });
+    Post.hasMany(models.Flair, {
+      foreignKey: "postId",
+      as: "flairs"
+    });
   };
 
 
