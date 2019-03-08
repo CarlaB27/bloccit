@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <% include ../static/partials/head.ejs %>
+    <%- include('../partials/head.ejs') -%>
   </head>
   <body>
-    <% include ../static/partials/navbar.ejs %>
+    <%- include('../partials/navbar.ejs') -%>
 
-    <main class="container">
-      <h1>New Flair</h1>
-<!-- #1 -->
-      <form action="/posts/<%= postId %>/flairs/create" method="post">
+     <main class="container">
+
+       <h1>New Flair</h1>
+
+       <form action="/flairs/create" method="post">
         <div class="form-group">
-          <label for="name">Flair name</label>
-          <input type="text" class="form-control" name="name" aria-describedby="nameHelp" placeholder="Enter Name">
+          <label for="title">Flair name</label>
+          <input type="text" class="form-control" name="name" aria-describedby="titleHelp" placeholder="Enter Name">
         </div>
-
         <div class="form-group">
-          <label for="color">Flair color</label>
-          <textarea rows="4" class="form-control" name="color" placeholder="Enter Flair color"></textarea>
+          <label for="color">Color</label>
+          <input type="color" class="form-control" name="color">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
-    </main>
 
-    <% include ../static/partials/baseScripts.ejs %>
+     </main>
 
-  </body>
+     <%- include('../partials/baseScripts.ejs') -%>
+
+   </body>
 </html>
