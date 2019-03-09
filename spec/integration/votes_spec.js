@@ -9,9 +9,7 @@ const User = require("../../src/db/models").User;
 const Vote = require("../../src/db/models").Vote;
 
 describe("routes : votes", () => {
-
     beforeEach((done) => {
-
         // #2
         this.user;
         this.topic;

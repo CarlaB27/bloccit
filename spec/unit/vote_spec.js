@@ -110,6 +110,24 @@ describe("Vote", () => {
                 });
         });
 
+        //Create a vote with a value of anything other than 1 or -1. 
+        //This scenario should not be successful.
+        it("should not create a vote with a value other than 1 or -1", (done) => {
+            Vote.create({
+                value: 5,
+                postId: this.post.id,
+                userId: this.user.id
+            })
+                .then((vote) => {
+                    done();
+                })
+                .catch((err) => {
+                    expect(err.message).toContain("Validation error - isIn value failed");
+                    done();
+                });
+        });
+
+
         // #6
         it("should not create a vote without assigned post or user", (done) => {
             Vote.create({
@@ -127,6 +145,30 @@ describe("Vote", () => {
 
                 })
         });
+
+        //Create more than one vote per user for a given post. 
+        //This scenario should not be successful.
+        it("should not create more than one vote per user on a post", (done) => {
+            Vote.create({
+                value: -1,
+                postId: this.post.id,
+                userId: this.user.id
+            })
+                .then((vote) => {
+                    Vote.create({
+                        value: -1.
+                    postId: this.post.id,
+                        userId: this.user.id
+                    })
+                        .then((vote) +> {
+                            done();
+                        })
+                })
+                .catch((err) => {
+                    expect(err.message).toContain("Validation error - only one vote per user is allowed on a post");
+                    done();
+                });
+        })
 
     });
 
@@ -253,6 +295,62 @@ describe("Vote", () => {
 
     });
 
+    //Write a test for the getPoints method of the Post model.
+    describe("#getPoints()", () => {
+        it("should return total votes for a post", (done) => {
+            Vote.create({
+                value: 1,
+                userId: this.user.id,
+                postId: this.post.id
+            })
+            then((vote) => {
+                expect(this.post.getPoints()).toBe(1);
+                done();
+            })
+                .catch((err) => {
+                    console.log(err);
+                    done();
+                })
+        })
+    })
 
+    //Write a test for a method called hasUpvoteFor(). 
+    describe("#hasUpvoteFor()", () => {
+        it("should return true if the user with the matching userId has an upvote for the associated post", (done) => {
+            Vote.create({
+                value: 1,
+                userId: this.user.id,
+                postId: this.post.id
+            })
+            then((vote) => {
+                expect(this.post.hasUpvoteFor(this.user.id)).toBe(true);
+                done();
+            })
+                .catch((err) => {
+                    console.log(err);
+                    done();
+                })
+        })
+    })
+
+
+    //Write a test for a method called hasDownvoteFor(). 
+    describe("#hasDownvoteFor()", () => {
+        it("should returns true if the user with the matching userId has a downvote for the associated post", (done) => {
+            Vote.create({
+                value: -1,
+                userId: this.user.id,
+                postId: this.post.id
+            })
+            then((vote) => {
+                expect(this.post.hasDownvoteFor(this.user.id)).toBe(true);
+                done();
+            })
+                .catch((err) => {
+                    console.log(err);
+                    done();
+                })
+        })
+    })
 
 });
